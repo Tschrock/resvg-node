@@ -1,7 +1,13 @@
 use serde::{Deserialize, Deserializer};
 
 #[derive(Deserialize)]
-#[serde(tag = "mode", content = "value", rename_all = "lowercase", deny_unknown_fields, remote = "usvg::FitTo")]
+#[serde(
+    tag = "mode",
+    content = "value",
+    rename_all = "lowercase",
+    deny_unknown_fields,
+    remote = "usvg::FitTo"
+)]
 pub enum FitToDef {
     Original,
     Width(u32),
@@ -34,9 +40,9 @@ impl Default for JsOptions {
             font: JsFontOptions::default(),
             dpi: 96.0,
             languages: vec!["en".to_string()],
-            shape_rendering: usvg::ShapeRendering::GeometricPrecision,
-            text_rendering: usvg::TextRendering::OptimizeLegibility,
-            image_rendering: usvg::ImageRendering::OptimizeQuality,
+            shape_rendering: usvg::ShapeRendering::default(),
+            text_rendering: usvg::TextRendering::default(),
+            image_rendering: usvg::ImageRendering::default(),
             fit_to: usvg::FitTo::Original,
             background: None,
         }
@@ -80,11 +86,11 @@ where
     D: Deserializer<'de>,
 {
     match u64::deserialize(deserializer)? {
-        0 => Ok(usvg::ShapeRendering::CrispEdges),
-        1 => Ok(usvg::ShapeRendering::GeometricPrecision),
-        2 => Ok(usvg::ShapeRendering::OptimizeSpeed),
+        0 => Ok(usvg::ShapeRendering::OptimizeSpeed),
+        1 => Ok(usvg::ShapeRendering::CrispEdges),
+        2 => Ok(usvg::ShapeRendering::GeometricPrecision),
         n => Err(serde::de::Error::custom(format_args!(
-            "Invalid ShapeRendering value: {}, expected 0 through 2",
+            "Invalid ShapeRendering value: {}. Expected 0 (OptimizeSpeed), 1 (CrispEdges), or 2 (GeometricPrecision).",
             n
         ))),
     }
@@ -95,11 +101,11 @@ where
     D: Deserializer<'de>,
 {
     match u64::deserialize(deserializer)? {
-        0 => Ok(usvg::TextRendering::GeometricPrecision),
+        0 => Ok(usvg::TextRendering::OptimizeSpeed),
         1 => Ok(usvg::TextRendering::OptimizeLegibility),
-        2 => Ok(usvg::TextRendering::OptimizeSpeed),
+        2 => Ok(usvg::TextRendering::GeometricPrecision),
         n => Err(serde::de::Error::custom(format_args!(
-            "Invalid TextRendering value: {}, expected 0 through 2",
+            "Invalid TextRendering value: {}. Expected 0 (OptimizeSpeed), 1 (OptimizeLegibility), or 2 (GeometricPrecision).",
             n
         ))),
     }
@@ -113,7 +119,7 @@ where
         0 => Ok(usvg::ImageRendering::OptimizeQuality),
         1 => Ok(usvg::ImageRendering::OptimizeSpeed),
         n => Err(serde::de::Error::custom(format_args!(
-            "Invalid ImageRendering value: {}, expected 0 through 1",
+            "Invalid ImageRendering value: {}. Expected 0 (OptimizeQuality) or 1 (OptimizeSpeed).",
             n
         ))),
     }
