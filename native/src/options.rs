@@ -1,6 +1,50 @@
 use serde::{Deserialize, Deserializer};
 
 #[derive(Deserialize)]
+#[serde(tag = "mode", content = "value", rename_all = "lowercase", deny_unknown_fields, remote = "usvg::FitTo")]
+pub enum FitToDef {
+    Original,
+    Width(u32),
+    Height(u32),
+    Zoom(f32),
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", default, deny_unknown_fields)]
+pub struct JsOptions {
+    pub path: Option<String>,
+    pub font: JsFontOptions,
+    pub dpi: f64,
+    pub languages: Vec<String>,
+    #[serde(deserialize_with = "deserialize_shape_rendering")]
+    pub shape_rendering: usvg::ShapeRendering,
+    #[serde(deserialize_with = "deserialize_text_rendering")]
+    pub text_rendering: usvg::TextRendering,
+    #[serde(deserialize_with = "deserialize_image_rendering")]
+    pub image_rendering: usvg::ImageRendering,
+    #[serde(with = "FitToDef")]
+    pub fit_to: usvg::FitTo,
+    pub background: Option<String>,
+}
+
+impl Default for JsOptions {
+    fn default() -> JsOptions {
+        JsOptions {
+            path: None,
+            font: JsFontOptions::default(),
+            dpi: 96.0,
+            languages: vec!["en".to_string()],
+            shape_rendering: usvg::ShapeRendering::GeometricPrecision,
+            text_rendering: usvg::TextRendering::OptimizeLegibility,
+            image_rendering: usvg::ImageRendering::OptimizeQuality,
+            fit_to: usvg::FitTo::Original,
+            background: None,
+        }
+    }
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", default, deny_unknown_fields)]
 pub struct JsFontOptions {
     pub load_system_fonts: bool,
     pub font_files: Vec<String>,
@@ -14,8 +58,8 @@ pub struct JsFontOptions {
     pub monospace_family: String,
 }
 
-impl JsFontOptions {
-    pub fn new() -> JsFontOptions {
+impl Default for JsFontOptions {
+    fn default() -> JsFontOptions {
         JsFontOptions {
             load_system_fonts: true,
             font_files: vec![],
@@ -31,47 +75,6 @@ impl JsFontOptions {
     }
 }
 
-#[derive(Deserialize)]
-pub struct JsOptions {
-    pub path: Option<String>,
-    pub font: JsFontOptions,
-    pub dpi: f64,
-    pub languages: Vec<String>,
-    #[serde(deserialize_with = "deserialize_shape_rendering")]
-    pub shape_rendering: usvg::ShapeRendering,
-    #[serde(deserialize_with = "deserialize_text_rendering")]
-    pub text_rendering: usvg::TextRendering,
-    #[serde(deserialize_with = "deserialize_image_rendering")]
-    pub image_rendering: usvg::ImageRendering,
-    pub fit_to: JsFitTo,
-    pub background: Option<String>,
-}
-
-impl JsOptions {
-    pub fn new() -> JsOptions {
-        JsOptions {
-            path: None,
-            font: JsFontOptions::new(),
-            dpi: 96.0,
-            languages: vec!["en".to_string()],
-            shape_rendering: usvg::ShapeRendering::GeometricPrecision,
-            text_rendering: usvg::TextRendering::OptimizeLegibility,
-            image_rendering: usvg::ImageRendering::OptimizeQuality,
-            fit_to: JsFitTo::Original,
-            background: None,
-        }
-    }
-}
-
-#[derive(Deserialize)]
-#[serde(tag = "type", rename_all = "lowercase")]
-pub enum JsFitTo {
-    Original,
-    Width { value: u32 },
-    Height { value: u32 },
-    Zoom { value: f32 },
-}
-
 fn deserialize_shape_rendering<'de, D>(deserializer: D) -> Result<usvg::ShapeRendering, D::Error>
 where
     D: Deserializer<'de>,
@@ -81,7 +84,7 @@ where
         1 => Ok(usvg::ShapeRendering::GeometricPrecision),
         2 => Ok(usvg::ShapeRendering::OptimizeSpeed),
         n => Err(serde::de::Error::custom(format_args!(
-            "invalid shape_rendering value: {}, expected 0 through 2",
+            "Invalid ShapeRendering value: {}, expected 0 through 2",
             n
         ))),
     }
@@ -96,7 +99,7 @@ where
         1 => Ok(usvg::TextRendering::OptimizeLegibility),
         2 => Ok(usvg::TextRendering::OptimizeSpeed),
         n => Err(serde::de::Error::custom(format_args!(
-            "invalid shape_rendering value: {}, expected 0 through 2",
+            "Invalid TextRendering value: {}, expected 0 through 2",
             n
         ))),
     }
@@ -110,7 +113,7 @@ where
         0 => Ok(usvg::ImageRendering::OptimizeQuality),
         1 => Ok(usvg::ImageRendering::OptimizeSpeed),
         n => Err(serde::de::Error::custom(format_args!(
-            "invalid shape_rendering value: {}, expected 0 through 1",
+            "Invalid ImageRendering value: {}, expected 0 through 1",
             n
         ))),
     }
