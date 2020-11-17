@@ -1,0 +1,27 @@
+[package]
+name = "resvg-node"
+version = "0.1.0"
+authors = ["Tyler Schrock <tschrock123@gmail.com>"]
+license = "MPL-2.0"
+build = "build.rs"
+edition = "2018"
+exclude = ["artifacts.json", "index.node"]
+
+[lib]
+name = "resvg_node"
+crate-type = ["cdylib"]
+
+[build-dependencies]
+neon-build = "0.4.0"
+
+[dependencies]
+neon = "0.4.0"
+neon-serde = "0.4.0"
+neon-runtime = "0.4"
+serde_derive = "1.0.117"
+serde = { version = "1.0.117", features = ["derive"] }
+resvg = { git = "https://github.com/Tschrock/resvg" }
+usvg = { git = "https://github.com/Tschrock/resvg" }
+fontdb = "0.2.0"
+svgtypes = "0.5"
+log = "0.4.11"

@@ -1,0 +1,14 @@
+{
+  "name": "resvg-node",
+  "version": "0.1.0",
+  "description": "`resvg` as a native node module.",
+  "main": "lib/index.js",
+  "author": "Tyler Schrock <tschrock123@gmail.com>",
+  "license": "MPL-2.0",
+  "dependencies": {
+    "neon-cli": "^0.5.1"
+  },
+  "scripts": {
+    "install": "neon build"
+  }
+}
