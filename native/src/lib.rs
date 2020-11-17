@@ -1,36 +1,50 @@
-use neon::prelude::*;
-use usvg;
-use options::*;
+extern crate neon_serde;
+use serde::de::DeserializeOwned;
+use serde_bytes;
+
 use fonts::*;
+use neon::prelude::*;
+use options::*;
+use usvg;
 
-mod options;
 mod fonts;
+mod options;
 
-fn parse_color(hex: Option<String>) -> Result<Option<usvg::Color>, svgtypes::Error> {
-    hex.map(|p| p.parse::<usvg::Color>()).transpose()
+fn parse_color(hex: &Option<String>) -> Result<Option<usvg::Color>, svgtypes::Error> {
+    hex.as_ref().map(|p| p.parse::<usvg::Color>()).transpose()
 }
 
 macro_rules! jstry(
     ($cx:expr, $e:expr) => (match $e { Ok(e) => e, Err(e) => return $cx.throw_error(format!("{}", e)) })
 );
 
-fn copy_vec_to_buffer(mut cx: FunctionContext, vec: Vec<u8>) -> JsResult<JsBuffer> {
-    let mut buf = cx.buffer(vec.len() as u32)?;
-    cx.borrow_mut(&mut buf, |data| {
-        data.as_mut_slice::<u8>().copy_from_slice(&vec)
-    });
-    Ok(buf)
+fn get_argument<'j, V>(cx: &mut FunctionContext, i: i32) -> Result<V, neon::result::Throw>
+where
+    V: DeserializeOwned + ?Sized
+{
+    let arg = cx.argument(i)?;
+    let js_options_opt: V = neon_serde::from_value(cx, arg)?;
+    Ok(js_options_opt)
 }
 
-fn render(mut cx: FunctionContext) -> JsResult<JsBuffer> {
-    let svg_data = cx.argument::<JsString>(0)?;
-    let svg_options_argument = cx.argument_opt(1);
+fn get_argument_or_default<'j, V>(
+    cx: &mut FunctionContext,
+    i: i32,
+) -> Result<V, neon::result::Throw>
+where
+    V: DeserializeOwned + ?Sized,
+    V: std::default::Default,
+{
+    let arg = cx.argument_opt(i);
+    let js_options_opt: Option<V> = neon_serde::from_value_opt(cx, arg)?;
+    Ok(js_options_opt.unwrap_or_default())
+}
 
-    let js_options = match svg_options_argument {
-        Some(options) => neon_serde::from_value(&mut cx, options)?,
-        None => JsOptions::new(),
-    };
+fn render(mut cx: FunctionContext) -> JsResult<JsValue> {
+    let svg_data: String = get_argument(&mut cx, 0)?;
+    let js_options: JsOptions = get_argument_or_default(&mut cx, 1)?;
 
+    let background = jstry!(cx, parse_color(&js_options.background));
     let fontdb = load_fonts(&js_options.font);
 
     let svg_options = usvg::Options {
@@ -45,31 +59,21 @@ fn render(mut cx: FunctionContext) -> JsResult<JsBuffer> {
         keep_named_groups: false,
         fontdb,
     };
+    let tree = jstry!(cx, usvg::Tree::from_str(&svg_data, &svg_options));
 
-    let svg_fit_to = match js_options.fit_to {
-        JsFitTo::Original => usvg::FitTo::Original,
-        JsFitTo::Height { value } => usvg::FitTo::Height(value),
-        JsFitTo::Width { value } => usvg::FitTo::Width(value),
-        JsFitTo::Zoom { value } => usvg::FitTo::Zoom(value),
-    };
+    let image = resvg::render(&tree, js_options.fit_to, background);
 
-    let background = jstry!(cx, parse_color(js_options.background));
-
-    let tree = jstry!(
-        cx,
-        usvg::Tree::from_str(svg_data.value().as_str(), &svg_options)
-    );
-
-    let image = resvg::render(&tree, svg_fit_to, background);
+    let mut buffer: Vec<u8> = vec![];
 
     match image {
         Some(image) => {
-            let mut buffer: Vec<u8> = vec![];
             jstry!(cx, image.write_png(&mut buffer));
-            copy_vec_to_buffer(cx, buffer)
         },
-        None => cx.buffer(0)
+        _ => {}
     }
+
+    let bytes = serde_bytes::ByteBuf::from(buffer);
+    Ok(neon_serde::to_value(&mut cx, &bytes)?)
 }
 
 fn render_node(mut cx: FunctionContext) -> JsResult<JsString> {
