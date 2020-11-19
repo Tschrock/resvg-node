@@ -15,7 +15,7 @@ crate-type = ["cdylib"]
 napi-build = "0.2"
 
 [dependencies]
-napi = { version = "0.5", features = ["napi3", "serde-json"] }
+napi = { version = "0.5", features = ["napi1", "serde-json"] }
 napi-derive = { version = "0.5" }
 serde = { version = "1.0.117", features = ["derive"] }
 resvg = { git = "https://github.com/Tschrock/resvg" }

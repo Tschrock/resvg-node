@@ -19,8 +19,11 @@
     "repository": "github:Tschrock/resvg-node",
     "scripts": {
         "prepare": "tsc",
-        "build": "tsc",
-        "watch": "tsc --watch"
+        "build": "npm run build-ts && npm run build-rs",
+        "build-ts": "tsc",
+        "build-rs": "cargo build && napi build",
+        "build-release": "npm run build-ts && cargo build --release && napi build --release",
+        "watch-ts": "tsc --watch"
     },
     "devDependencies": {
         "@types/node": "^14.14.7",
