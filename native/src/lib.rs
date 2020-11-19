@@ -7,12 +7,15 @@
 //! Provides a Node.js api for rendering SVGs using resvg.
 
 mod fonts;
-#[macro_use]
-mod neon_utils;
 mod options;
 
-extern crate neon_serde;
-use neon::prelude::*;
+#[macro_use]
+extern crate napi;
+#[macro_use]
+extern crate napi_derive;
+
+use std::convert::TryInto;
+use napi::Module;
 
 /// Trys to parse an `Option<String>` into an `Option<usvg::Color>`
 fn parse_color(value: &Option<String>) -> Result<Option<usvg::Color>, svgtypes::Error> {
@@ -20,12 +23,17 @@ fn parse_color(value: &Option<String>) -> Result<Option<usvg::Color>, svgtypes::
 }
 
 /// Renders an SVG
-fn render(mut cx: FunctionContext) -> JsResult<JsValue> {
-    let svg_data: String = neon_utils::get_argument(&mut cx, 0)?;
-    let js_options: options::JsOptions = neon_utils::get_argument_or_default(&mut cx, 1)?;
+#[js_function(1)]
+fn render(ctx: napi::CallContext) -> napi::Result<napi::JsBuffer> {
+
+    let svg_data: String = ctx.get::<napi::JsString>(0)?.into_utf8()?.try_into()?;
+
+    // TODO: Figure out how to get this
+    let js_options = options::JsOptions::default();
 
     // Parse the background
-    let background = jstry!(cx, parse_color(&js_options.background));
+    let background_string = js_options.background;
+    let background = parse_color(&background_string).map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
 
     // Load fonts
     let fontdb = fonts::load_fonts(&js_options.font);
@@ -45,7 +53,7 @@ fn render(mut cx: FunctionContext) -> JsResult<JsValue> {
     };
 
     // Parse the SVG string into a tree.
-    let tree = jstry!(cx, usvg::Tree::from_str(&svg_data, &svg_options));
+    let tree = usvg::Tree::from_str(&svg_data, &svg_options).map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
 
     // Render the tree
     let image = resvg::render(&tree, js_options.fit_to, background);
@@ -53,15 +61,15 @@ fn render(mut cx: FunctionContext) -> JsResult<JsValue> {
     // Write the image data to a buffer
     let mut buffer: Vec<u8> = vec![];
     if let Some(image) = image {
-        jstry!(cx, image.write_png(&mut buffer));
+        image.write_png(&mut buffer).map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
     }
 
-    // Convert to a JsBuffer and return
-    let bytes = serde_bytes::ByteBuf::from(buffer);
-    Ok(neon_serde::to_value(&mut cx, &bytes)?)
+    ctx.env.create_buffer_with_data(buffer).map(|v| v.into_raw())
 }
 
-register_module!(mut cx, {
-    cx.export_function("render", render)?;
+register_module!(resvg, init);
+
+fn init(module: &mut napi::Module) -> napi::Result<()> {
+    module.create_named_method("render", render)?;
     Ok(())
-});
+}

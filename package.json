@@ -1,24 +1,30 @@
 {
-  "name": "resvg-node",
-  "version": "0.1.0",
-  "description": "`resvg` as a native node module.",
-  "keywords": ["resvg", "svg", "rendering"],
-  "homepage": "https://github.com/Tschrock/resvg-node#readme",
-  "bugs": "https://github.com/Tschrock/resvg-node/issues",
-  "license": "MPL-2.0",
-  "author": "Tyler Schrock <tschrock123@gmail.com>",
-  "main": "lib/index.js",
-  "typings": "lib/index.d.ts",
-  "repository": "github:Tschrock/resvg-node",
-  "scripts": {
-    "install": "neon build",
-    "build-typescript": "tsc"
-  },
-  "dependencies": {
-    "neon-cli": "^0.5.1"
-  },
-  "devDependencies": {
-    "@types/node": "^14.14.7",
-    "typescript": "^4.0.5"
-  }
+    "name": "resvg-node",
+    "version": "0.1.0",
+    "description": "`resvg` as a native node module.",
+    "keywords": [
+        "resvg",
+        "svg",
+        "rendering"
+    ],
+    "homepage": "https://github.com/Tschrock/resvg-node#readme",
+    "bugs": "https://github.com/Tschrock/resvg-node/issues",
+    "license": "MPL-2.0",
+    "author": "Tyler Schrock <tschrock123@gmail.com>",
+    "files": [
+        "lib"
+    ],
+    "main": "lib/index.js",
+    "typings": "lib/index.d.ts",
+    "repository": "github:Tschrock/resvg-node",
+    "scripts": {
+        "prepare": "tsc",
+        "build": "tsc",
+        "watch": "tsc --watch"
+    },
+    "devDependencies": {
+        "@types/node": "^14.14.7",
+        "napi-rs": "^0.3.10",
+        "typescript": "^4.0.5"
+    }
 }

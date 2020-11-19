@@ -12,12 +12,11 @@ name = "resvg_node"
 crate-type = ["cdylib"]
 
 [build-dependencies]
-neon-build = "0.5.2"
+napi-build = "0.2"
 
 [dependencies]
-neon = "0.5.2"
-neon-serde = { git = "https://github.com/Tschrock/neon-serde" }
-neon-runtime = "0.5.2"
+napi = { version = "0.5" }
+napi-derive = { version = "0.5" }
 serde_bytes = "0.11.5"
 serde = { version = "1.0.117", features = ["derive"] }
 resvg = { git = "https://github.com/Tschrock/resvg" }
@@ -25,3 +24,7 @@ usvg = { git = "https://github.com/Tschrock/resvg" }
 fontdb = "0.2.0"
 svgtypes = "0.5"
 log = "0.4.11"
+
+[patch.crates-io]
+napi = { git = "https://github.com/napi-rs/napi-rs" }
+napi-derive = { git = "https://github.com/napi-rs/napi-rs" }
