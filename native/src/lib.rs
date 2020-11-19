@@ -23,17 +23,19 @@ fn parse_color(value: &Option<String>) -> Result<Option<usvg::Color>, svgtypes::
 }
 
 /// Renders an SVG
-#[js_function(1)]
+#[js_function(2)]
 fn render(ctx: napi::CallContext) -> napi::Result<napi::JsBuffer> {
-
     let svg_data: String = ctx.get::<napi::JsString>(0)?.into_utf8()?.try_into()?;
 
-    // TODO: Figure out how to get this
-    let js_options = options::JsOptions::default();
+    let js_options: options::JsOptions = if ctx.length > 1 {
+        ctx.env.from_js_value(ctx.get::<napi::JsUnknown>(1)?)?
+    } else {
+        options::JsOptions::default()
+    };
 
     // Parse the background
-    let background_string = js_options.background;
-    let background = parse_color(&background_string).map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
+    let background = parse_color(&js_options.background)
+        .map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
 
     // Load fonts
     let fontdb = fonts::load_fonts(&js_options.font);
@@ -53,7 +55,8 @@ fn render(ctx: napi::CallContext) -> napi::Result<napi::JsBuffer> {
     };
 
     // Parse the SVG string into a tree.
-    let tree = usvg::Tree::from_str(&svg_data, &svg_options).map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
+    let tree = usvg::Tree::from_str(&svg_data, &svg_options)
+        .map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
 
     // Render the tree
     let image = resvg::render(&tree, js_options.fit_to, background);
@@ -61,10 +64,14 @@ fn render(ctx: napi::CallContext) -> napi::Result<napi::JsBuffer> {
     // Write the image data to a buffer
     let mut buffer: Vec<u8> = vec![];
     if let Some(image) = image {
-        image.write_png(&mut buffer).map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
+        image
+            .write_png(&mut buffer)
+            .map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
     }
 
-    ctx.env.create_buffer_with_data(buffer).map(|v| v.into_raw())
+    ctx.env
+        .create_buffer_with_data(buffer)
+        .map(|v| v.into_raw())
 }
 
 register_module!(resvg, init);
