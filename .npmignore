@@ -1,5 +1,5 @@
-lib/**/*.js
-lib/**/*.d.ts
+lib/**/*.ts
+!lib/**/*.d.ts
 **/node_modules
 **/target
 *.tgz

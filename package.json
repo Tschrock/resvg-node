@@ -11,29 +11,25 @@
     "bugs": "https://github.com/Tschrock/resvg-node/issues",
     "license": "MPL-2.0",
     "author": "Tyler Schrock <tschrock123@gmail.com>",
-    "files": [
-        "lib"
-    ],
     "main": "lib/index.js",
     "typings": "lib/index.d.ts",
     "repository": "github:Tschrock/resvg-node",
     "scripts": {
-        "install": "node ./lib/prebuild.js -- --install",
-        "prepare": "tsc",
+        "prepare": "npm run build:ts",
         "build": "npm run build:ts && npm run build:rs",
-        "build:ts": "tsc",
-        "build:rs": "node ./lib/prebuild.js -- --build",
         "build:release": "npm run build:ts && npm run build:rs:release",
-        "build:rs:release": "node ./lib/prebuild.js -- --build --release",
+        "build:ts": "tsc",
+        "watch:ts": "tsc --watch",
+        "install": "node ./lib/prebuild.js -- --install",
         "download": "node ./lib/prebuild.js -- --download",
-        "watch:ts": "tsc --watch"
+        "build:rs": "node ./lib/prebuild.js -- --build",
+        "build:rs:release": "node ./lib/prebuild.js -- --build --release"
     },
     "dependencies": {
         "detect-libc": "^1.0.3"
     },
     "devDependencies": {
         "@types/node": "^14.14.7",
-        "napi-rs": "^0.3.10",
         "typescript": "^4.0.5"
     },
     "engines": {
