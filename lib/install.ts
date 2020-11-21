@@ -18,8 +18,15 @@ export const nativeInstallPath = path.join(__dirname, "..", manifest.path);
 export const localBuildFilename = `${name}-${version}-${osArch}-${osPlatform}-${osFamily}.node`;
 export const localBuildInstallPath = path.join(nativeInstallPath, localBuildFilename);
 
+interface NativeFile {
+    name: string;
+    os: string;
+    cpu: string;
+    musl?: boolean;
+}
+
 export function getCompatableRemotes() {
-    return manifest.files.filter(file => file.os == osPlatform && file.cpu == osArch && (!file.musl || family == 'musl'));
+    return manifest.files.filter((file: NativeFile) => file.os == osPlatform && file.cpu == osArch && (!file.musl || family == 'musl'));
 }
 
 export function findInstalledModule(): string {
