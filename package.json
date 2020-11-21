@@ -25,6 +25,7 @@
         "build:rs": "node ./lib/prebuild.js -- --build",
         "build:release": "npm run build:ts && npm run build:rs:release",
         "build:rs:release": "node ./lib/prebuild.js -- --build --release",
+        "download": "node ./lib/prebuild.js -- --download",
         "watch:ts": "tsc --watch"
     },
     "dependencies": {
