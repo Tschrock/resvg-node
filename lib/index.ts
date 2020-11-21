@@ -1,5 +1,6 @@
-// @ts-ignore
-import addon from '../native';
+import { findInstalledModule } from './install';
+
+const addon = require(findInstalledModule());
 
 /**
  * Renders an SVG.

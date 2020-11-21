@@ -2,4 +2,3 @@ lib/**/*.js
 lib/**/*.d.ts
 **/node_modules
 **/target
-**/index.node
