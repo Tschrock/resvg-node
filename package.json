@@ -46,6 +46,11 @@
                 "name": "resvg-node-0.1.0-x64-linux-glibc.node",
                 "os": "linux",
                 "cpu": "x64"
+            },
+            {
+                "name": "resvg-node-0.1.0-x64-win32.node",
+                "os": "win32",
+                "cpu": "x64"
             }
         ]
     }
