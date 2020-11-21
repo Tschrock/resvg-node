@@ -46,13 +46,15 @@ const noop = () => { };
 
 async function downloadFile(url: string, dest: string, { progress = noop, timeout = 10000 }) {
     return new Promise((resolve, reject) => {
-        console.log(`Downloading binary from '${url}'`);
+        console.log(`Downloading binary from '${url}' to '${dest}'.`);
+        fs.mkdirSync(path.dirname(dest), { recursive: true });
         const progressTracker = new ProgressTracker();
         progressTracker.on('progress', progress);
         const request = (url.startsWith('https') ? https : http).get(url);
         request.on('response', (response) => {
             if(response.statusCode && response.statusCode >= 200 && response.statusCode < 400 ) {
                 const file = fs.createWriteStream(dest);
+                file.on('error', err => reject(err));
                 file.on('finish', () => resolve(file.path));
                 response.pipe(progressTracker).pipe(file);
             }

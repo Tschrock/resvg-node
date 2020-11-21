@@ -1,5 +1,6 @@
 import { spawn } from 'child_process';
 import fs from 'fs';
+import path from 'path';
 import { createInterface } from 'readline';
 
 import { localBuildInstallPath } from './install';
@@ -7,6 +8,7 @@ import packageJson from '../package.json';
 
 export async function build(release = false): Promise<void> {
     const buildOutput = await cargoBuild(release);
+    await fs.promises.mkdir(path.dirname(localBuildInstallPath), { recursive: true });
     await fs.promises.copyFile(buildOutput, localBuildInstallPath);
 }
 
