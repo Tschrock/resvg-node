@@ -20,7 +20,7 @@
         "build:release": "npm run build:ts && npm run build:rs:release",
         "build:ts": "tsc",
         "watch:ts": "tsc --watch",
-        "install": "node ./lib/prebuild.js -- --install",
+        "install": "node ./lib/prebuild.js -- --install --release",
         "download": "node ./lib/prebuild.js -- --download",
         "build:rs": "node ./lib/prebuild.js -- --build",
         "build:rs:release": "node ./lib/prebuild.js -- --build --release"
