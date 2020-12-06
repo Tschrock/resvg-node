@@ -25,7 +25,7 @@ const { render } = require('resvg-node');
 
 const options = {
     background: "#ff00ff",
-    fit_to: {
+    fitTo: {
         mode: "width",
         value: 1000
     }
@@ -43,26 +43,26 @@ const pngData = render('<svg height="100" width="100" xmlns="http://www.w3.org/2
 | font            | FontOptions    |                    | Font related options.                                                       |
 | dpi             | number         | 96.0               | The target DPI. Affects unit conversions.                                   |
 | languages       | string[]       | ["en"]             | A list of languages, for resolving `systemLanguage` conditional attributes. |
-| shape_rendering | ShapeRendering | GeometricPrecision | The default shape rendering method.                                         |
-| text_rendering  | TextRendering  | OptimizeLegibility | The default text rendering method.                                          |
-| image_rendering | ImageRendering | OptimizeQuality    | The default image rendering method.                                         |
-| fit_to          | FitTo          | Original           | The size to render the SVG.                                                 |
+| shapeRendering | ShapeRendering | GeometricPrecision | The default shape rendering method.                                         |
+| textRendering  | TextRendering  | OptimizeLegibility | The default text rendering method.                                          |
+| imageRendering | ImageRendering | OptimizeQuality    | The default image rendering method.                                         |
+| fitTo          | FitTo          | Original           | The size to render the SVG.                                                 |
 | background      | string         |                    | The background color of the SVG.                                            |
 
 ### FontOptions
 
 | Option              | Type     | Default         | Description                         |
 |---------------------|----------|-----------------|-------------------------------------|
-| load_system_fonts   | boolean  | true            | If system fonts should be loaded.   |
-| font_files          | string[] | []              | A list of font files to load.       |
-| font_dirs           | string[] | []              | A list of font directories to load. |
-| default_font_family | string   | Times New Roman | The default font family.            |
-| default_font_size   | number   | 12              | The default font size.              |
-| serif_family        | string   | Times New Roman | The 'serif' font family.            |
-| sans_serif_family   | string   | Arial           | The 'sans-serif' font family.       |
-| cursive_family      | string   | Comic Sans MS   | The 'cursive' font family.          |
-| fantasy_family      | string   | Impact          | The 'fantasy' font family.          |
-| monospace_family    | string   | Courier New     | The 'monospace' font family.        |
+| loadSystemFonts   | boolean  | true            | If system fonts should be loaded.   |
+| fontFiles          | string[] | []              | A list of font files to load.       |
+| fontDirs           | string[] | []              | A list of font directories to load. |
+| defaultFontFamily | string   | Times New Roman | The default font family.            |
+| defaultFontSize   | number   | 12              | The default font size.              |
+| serifFamily        | string   | Times New Roman | The 'serif' font family.            |
+| sansSerifFamily   | string   | Arial           | The 'sans-serif' font family.       |
+| cursiveFamily      | string   | Comic Sans MS   | The 'cursive' font family.          |
+| fantasyFamily      | string   | Impact          | The 'fantasy' font family.          |
+| monospaceFamily    | string   | Courier New     | The 'monospace' font family.        |
 
 ### ShapeRendering
 

@@ -55,7 +55,7 @@ export interface Options {
      *
      * Default: GeometricPrecision
      */
-    shape_rendering?: ShapeRendering;
+    shapeRendering?: ShapeRendering;
 
     /**
      * The default text rendering method.
@@ -64,7 +64,7 @@ export interface Options {
      *
      * Default: OptimizeLegibility
      */
-    text_rendering?: TextRendering;
+    textRendering?: TextRendering;
 
     /**
      * The default image rendering method.
@@ -73,14 +73,14 @@ export interface Options {
      *
      * Default: OptimizeQuality
      */
-    image_rendering?: ImageRendering;
+    imageRendering?: ImageRendering;
 
     /**
      * The size to render the SVG.
      *
      * Default: Original
      */
-    fit_to?: FitTo;
+    fitTo?: FitTo;
 
     /**
      * The background color of the SVG.
@@ -99,21 +99,21 @@ export interface FontOptions {
      *
      * Default: true
      */
-    load_system_fonts?: boolean;
+    loadSystemFonts?: boolean;
 
     /**
      * A list of font files to load.
      *
      * Default: `[]`
      */
-    font_files?: Array<string>;
+    fontFiles?: Array<string>;
 
     /**
      * A list of font directories to load.
      *
      * Default: `[]`
      */
-    font_dirs?: Array<string>;
+    fontDirs?: Array<string>;
 
     /**
      * The default font family.
@@ -122,7 +122,7 @@ export interface FontOptions {
      *
      * Default: Times New Roman
      */
-    default_font_family?: string;
+    defaultFontFamily?: string;
 
     /**
      * The default font size.
@@ -131,42 +131,42 @@ export interface FontOptions {
      *
      * Default: 12
      */
-    default_font_size?: number;
+    defaultFontSize?: number;
 
     /**
      * The 'serif' font family.
      *
      * Default: Times New Roman
      */
-    serif_family?: string;
+    serifFamily?: string;
 
     /**
      * The 'sans-serif' font family.
      *
      * Default: Arial
      */
-    sans_serif_family?: string;
+    sansSerifFamily?: string;
 
     /**
      * The 'cursive' font family.
      *
      * Default: Comic Sans MS
      */
-    cursive_family?: string;
+    cursiveFamily?: string;
 
     /**
      * The 'fantasy' font family.
      *
      * Default: Impact
      */
-    fantasy_family?: string;
+    fantasyFamily?: string;
 
     /**
      * The 'monospace' font family.
      *
      * Default: Courier New
      */
-    monospace_family?: string;
+    monospaceFamily?: string;
 }
 
 /**
