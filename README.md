@@ -102,7 +102,7 @@ Renders the SVG using the specified width.
 { mode: "width", value: 1080 }
 ```
 #### Height
-Renders the SVG using the specified width.
+Renders the SVG using the specified height.
 ```js
 { mode: "height", value: 1080 }
 ```
