@@ -9,17 +9,26 @@
 mod fonts;
 mod options;
 
-#[macro_use]
 extern crate napi;
 #[macro_use]
 extern crate napi_derive;
 
 use std::convert::TryInto;
-use napi::Module;
 
 /// Trys to parse an `Option<String>` into an `Option<usvg::Color>`
 fn parse_color(value: &Option<String>) -> Result<Option<usvg::Color>, svgtypes::Error> {
     value.as_ref().map(|p| p.parse::<usvg::Color>()).transpose()
+}
+
+fn write_png(image: resvg::Image, out: impl std::io::Write) -> Result<(), png::EncodingError> {
+    let ref mut w = std::io::BufWriter::new(out);
+
+    let mut encoder = png::Encoder::new(w, image.width(), image.height());
+    encoder.set_color(png::ColorType::RGBA);
+    encoder.set_depth(png::BitDepth::Eight);
+
+    let mut writer = encoder.write_header()?;
+    writer.write_image_data(&image.data())
 }
 
 /// Renders an SVG
@@ -64,9 +73,7 @@ fn render(ctx: napi::CallContext) -> napi::Result<napi::JsBuffer> {
     // Write the image data to a buffer
     let mut buffer: Vec<u8> = vec![];
     if let Some(image) = image {
-        image
-            .write_png(&mut buffer)
-            .map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
+        write_png(image, &mut buffer).map_err(|e| napi::Error::from_reason(format!("{}", e)))?;
     }
 
     ctx.env
@@ -74,9 +81,8 @@ fn render(ctx: napi::CallContext) -> napi::Result<napi::JsBuffer> {
         .map(|v| v.into_raw())
 }
 
-register_module!(resvg, init);
-
-fn init(module: &mut napi::Module) -> napi::Result<()> {
-    module.create_named_method("render", render)?;
-    Ok(())
+#[module_exports]
+fn init(mut exports: napi::JsObject, _env: napi::Env) -> napi::Result<()> {
+  exports.create_named_method("render", render)?;
+  Ok(())
 }
