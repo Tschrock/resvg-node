@@ -1,3 +1,5 @@
+> This package is deprecated. Please use [@resvg/resvg-js](https://github.com/yisibl/resvg-js) instead.
+
 resvg for Node.js
 ========================
 
